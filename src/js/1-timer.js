@@ -10,9 +10,9 @@ import 'izitoast/dist/css/iziToast.min.css';
 //
 const startButton = document.querySelector('[data-start]');
 const dateInput = document.querySelector('#datetime-picker');
-const daysElement = document.querySelector('[data-days]');
-const hoursElement = document.querySelector('[data-hours]');
-const minutesElement = document.querySelector('[data-minutes]');
+const daysElem = document.querySelector('[data-days]');
+const hoursElem = document.querySelector('[data-hours]');
+const minutesElem = document.querySelector('[data-minutes]');
 const secondsEleent = document.querySelector('[data-seconds]');
 //
 startButton.disabled = true;
@@ -63,13 +63,13 @@ function addLeadingZero(value) {
   return value.padStart(2, 0);
 }
 //
-flatpickr('#datetime-picker', options);
+flatpickr(dateInput, options);
 //
-startButton.addEventListener('click', handleStartClick);
+startButton.addEventListener('click', onStartTimer);
 
 let intervalTime = null;
 
-function handleStartClick(event) {
+function onStartTimer(event) {
   clearInterval(intervalTime);
   dateInput.disabled = true;
   event.currentTarget.disabled = true;
@@ -78,10 +78,9 @@ function handleStartClick(event) {
     if (time >= 1000) {
       time -= 1000;
       let timeObj = convertMs(time);
-
-      daysElement.textContent = addLeadingZero(timeObj.days);
-      hoursElement.textContent = addLeadingZero(timeObj.hours);
-      minutesElement.textContent = addLeadingZero(timeObj.minutes);
+      daysElem.textContent = addLeadingZero(timeObj.days);
+      hoursElem.textContent = addLeadingZero(timeObj.hours);
+      minutesElem.textContent = addLeadingZero(timeObj.minutes);
       secondsEleent.textContent = addLeadingZero(timeObj.seconds);
     } else {
       dateInput.disabled = false;
