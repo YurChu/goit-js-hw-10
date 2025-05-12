@@ -1,5 +1,4 @@
 // Описаний в документації
-
 import flatpickr from 'flatpickr';
 // Додатковий імпорт стилів
 import 'flatpickr/dist/flatpickr.min.css';
@@ -9,14 +8,34 @@ import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
 //
-
+const startButton = document.querySelector('[data-start]');
+const dateInput = document.querySelector('#datetime-picker');
+const daysElement = document.querySelector('[data-days]');
+const hoursElement = document.querySelector('[data-hours]');
+const minutesElement = document.querySelector('[data-minutes]');
+const secondsEleent = document.querySelector('[data-seconds]');
+//
+startButton.disabled = true;
+let userSelectedDate = null;
+//
 const options = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    console.log(selectedDates[0]);
+    if (Date.now() > selectedDates[0].getTime()) {
+      startButton.disabled = true;
+      iziToast.show({
+        title: 'Error',
+        message: 'Please choose a date in the future',
+        backgroundColor: 'red',
+        messageColor: 'white',
+      });
+    } else {
+      startButton.disabled = false;
+      userSelectedDate = selectedDates[0];
+    }
   },
 };
 //
@@ -39,7 +58,34 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 //
-console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
+function addLeadingZero(value) {
+  value = String(value);
+  return value.padStart(2, 0);
+}
+//
+flatpickr('#datetime-picker', options);
+//
+startButton.addEventListener('click', handleStartClick);
+
+let intervalTime = null;
+
+function handleStartClick(event) {
+  clearInterval(intervalTime);
+  dateInput.disabled = true;
+  event.currentTarget.disabled = true;
+  let time = userSelectedDate.getTime() - Date.now();
+  intervalTime = setInterval(() => {
+    if (time >= 1000) {
+      time -= 1000;
+      let timeObj = convertMs(time);
+
+      daysElement.textContent = addLeadingZero(timeObj.days);
+      hoursElement.textContent = addLeadingZero(timeObj.hours);
+      minutesElement.textContent = addLeadingZero(timeObj.minutes);
+      secondsEleent.textContent = addLeadingZero(timeObj.seconds);
+    } else {
+      dateInput.disabled = false;
+    }
+  }, 1000);
+}
 //
